@@ -1,18 +1,16 @@
-import hashlib
 from fastapi import FastAPI, File, UploadFile, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import boto3
 from botocore.client import Config
-from datetime import datetime
 from typing import List
 import re
-import json
+import os
 
 # MinIO Configuration
-MINIO_ENDPOINT = "localhost:9000"
-ACCESS_KEY = "admin"
-SECRET_KEY = "admin123"
+MINIO_ENDPOINT = os.getenv("MINIO_ENDPOINT")
+ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
 ROOT_BUCKET = "media-storage"
 
 # Initialize FastAPI
