@@ -1,0 +1,123 @@
+# version: "3.8"
+
+# services:
+#   frontend:
+#     image: jpss-cloud:latest
+#     container_name: jpss-cloud-frontend
+#     build:
+#       context: ./frontend
+#       dockerfile: Dockerfile
+#     restart: always
+#     ports:
+#       - "3000:3000"
+#     environment:
+#       - NEXT_PUBLIC_API_URL=http://localhost:8000
+#     networks:
+#       - cloud-net
+
+#   backend:
+#     image: jpss-cloud-backend:latest
+#     container_name: jpss-cloud-backend
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     restart: always
+#     ports:
+#       - "8000:8000"
+#     environment:
+#       - MINIO_ENDPOINT=minio:9000
+#       - MINIO_ACCESS_KEY=admin
+#       - MINIO_SECRET_KEY=admin123
+#     depends_on:
+#       - minio
+#     networks:
+#       - cloud-net
+
+#   minio:
+#     image: minio/minio:latest
+#     container_name: jpss-cloud-minio
+#     restart: always
+#     environment:
+#       - MINIO_ROOT_USER=admin
+#       - MINIO_ROOT_PASSWORD=admin123
+#     ports:
+#       - "9000:9000"
+#       - "9001:9001" # MinIO Console
+#     volumes:
+#       - minio-data:/data
+#     command: server /data --console-address ":9001"
+#     networks:
+#       - cloud-net
+
+# volumes:
+#   minio-data:
+#     driver: local
+#     driver_opts:
+#       type: none
+#       device: /mnt/minio-storage
+#       o: bind
+
+# networks:
+#   cloud-net:
+#     driver: bridge
+
+version: "3.8"
+
+services:
+  frontend:
+    image: jpss-cloud:latest
+    container_name: jpss-cloud-frontend
+    build:
+      context: ./frontend # Path to your Next.js app
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_dHJ1c3RpbmctcmFtLTU2LmNsZXJrLmFjY291bnRzLmRldiQ
+      - CLERK_SECRET_KEY=sk_test_jv2QmwT8rE8S1UXvghpgzEE6eeYjEqCfpYIOdiuW5x
+      - NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+    networks:
+      - cloud-net
+
+  backend:
+    image: jpss-cloud-backend:latest
+    container_name: jpss-cloud-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=4ayUty544oKK1sPj3OuZ
+      - MINIO_SECRET_KEY=62XSGmil7kFNx4AggwOyMgESY4nlFq5tyKzbCKlP
+    depends_on:
+      - minio
+    networks:
+      - cloud-net
+
+  minio:
+    image: minio/minio:latest
+    container_name: jpss-cloud-minio
+    restart: always
+    environment:
+      - MINIO_ROOT_USER=admin
+      - MINIO_ROOT_PASSWORD=admin123
+    ports:
+      - "9000:9000"
+      - "9001:9001" # MinIO Console
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - cloud-net
+
+volumes:
+  minio-data:
+
+networks:
+  cloud-net:
+    driver: bridge
